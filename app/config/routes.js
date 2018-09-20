@@ -75,6 +75,8 @@ export default class extends React.Component {
 
                         <Stack key="Main" initial={this.state.isLoggedIn}>
                             <Scene key="Home" component={Home} title="Check-In" initial={true} type={ActionConst.REPLACE}/>
+                            <Scene key="Confirmation" navigationBarStyle={{backgroundColor: "#fff"}} titleStyle={navTitleStyle}
+                                component={Confirmation} title="Confirmation"/>
                         </Stack>
                     </Scene>
                     <Scene key="NewQuote"
@@ -83,11 +85,6 @@ export default class extends React.Component {
                            component={NewQuote} title="New Quote"
                            renderLeftButton={this.renderCloseButton}
                            renderRightButton={this.renderSaveButton}/>
-                    <Scene key="Confirmation"
-                           navigationBarStyle={{backgroundColor: "#fff"}}
-                           titleStyle={navTitleStyle}
-                           component={Confirmation} title="Confirmation"
-                           renderLeftButton={this.renderCloseButton}/>
                 </Modal>
             </Router>
         )

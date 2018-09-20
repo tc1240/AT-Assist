@@ -1,9 +1,9 @@
 import React from 'react';
 var { View, Button, Alert, Picker, Text } = require('react-native');
 import styles from "./styles";
-import { actions as auth } from "../../../auth/index";
 import {connect} from 'react-redux';
 import {Actions} from 'react-native-router-flux';
+import { auth } from "../../../../config/firebase";
 
 const { signOut } = auth;
 
@@ -12,20 +12,11 @@ class Confirmation extends React.Component {
         super();
         this.state = {}
         this.onSignOut = this.onSignOut.bind(this);
-     }
+    }
 
-     // problem of n+1 firebase reports might be due to auth in home changed to firebase stuff and not here
-     // props in home might reference a new type of props or something
     onSignOut() {
-        this.props.signOut(this.onSuccess.bind(this), this.onError.bind(this))
-    }
-
-    onSuccess() {
+        auth.signOut() 
         Actions.reset("root")
-    }
-
-    onError(error) {
-        Alert.alert('Oops!', error.message);
     }
 
     render() {
@@ -45,6 +36,5 @@ class Confirmation extends React.Component {
         );
     }
 }
-
 
 export default connect(null, { signOut })(Confirmation);

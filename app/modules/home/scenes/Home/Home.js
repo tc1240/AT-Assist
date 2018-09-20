@@ -17,32 +17,26 @@ var firstReason;
 var secondReason;
 var impairment;
 var pain;
-var currentEmail
 
+var defaultCheckin;
 
 
 class Home extends React.Component {
     constructor(){
         super();
-        this.state = { fReason: 'Regular Check-in', 
+        this.state = { fReason: 'None', 
                        sReason: 'None',
                        impairment: '0',
                        pain: '0',
                        user: ' ' };
         value = this.state.pickerVal;
         this.onSignOut = this.onSignOut.bind(this);
+        defaultCheckin = {id: 'newKey', firstR: 'None', secondR: 'None', impairment: 0, pain: 0, user: "curUser.email", note: ""};;
     }
 
     onSignOut() {
-        this.props.signOut(this.onSuccess.bind(this), this.onError.bind(this))
-    }
-
-    onSuccess() {
+        auth.signOut() 
         Actions.reset("root")
-    }
-
-    onError(error) {
-        Alert.alert('Oops!', error.message);
     }
 
     /**
@@ -67,24 +61,28 @@ class Home extends React.Component {
      */
     onCheckin() {
         auth.onAuthStateChanged(function(curUser) {
-            Actions.Confirmation();
+            
 
-            if (curUser ) {
+            if (curUser) {
                 
                 const newRef = database.ref().child('CheckIn').push();
                 const newKey = newRef.key;
        
                 var checkin = {id: newKey, firstR: firstReason, secondR: secondReason, impairment: impairment, pain: pain, user: curUser.email, note: ""};
-            
-                // Write the new quote data simultaneously in the quotes list and the user's quotes list.
-                let updates = {};
-                updates['/CheckIn/' + newKey] = checkin;
-            
-                database.ref().update(updates)
-                    .then(() => callback(true, checkin, null))
-                    .catch((error) => callback(false, null, error));
+       
+                // if last user is same as new user, and every feild is default then dont allow
+                if(defaultCheckin.firstR != checkin.firstR || defaultCheckin.secondR != checkin.secondR || defaultCheckin.impairment != checkin.impairment || defaultCheckin.pain != checkin.pain){
+                    
+                    // Write the new quote data simultaneously in the quotes list and the user's quotes list.
+                    let updates = {};
+                    updates['/CheckIn/' + newKey] = checkin;
                 
-
+                    database.ref().update(updates)
+                        .then(() => callback(true, checkin, null))
+                        .catch((error) => callback(false, null, error));
+                    
+                    Actions.Confirmation();
+                }
             }
         });        
     }
@@ -99,6 +97,7 @@ class Home extends React.Component {
                     selectedValue={(this.state && this.state.fReason)}
                     onValueChange={(value) => this.setState({fReason: value})}
                     onPress={this.onChange(this.state.fReason, this.state.sReason, this.state.impairment, this.state.pain)}>
+                        <Picker.Item label="None" value="None" />
                         <Picker.Item label="Regular Check-in" value="Regular Check-in" />
                         <Picker.Item label="Illness" value="Illness" />
                         <Picker.Item label="Shoulder Issues" value="Shoulder Issues" />
